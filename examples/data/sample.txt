@@ -1,0 +1,5 @@
+RAG Engineering — sample document
+
+This small file exists only to test the first ingestion loader.
+
+The project will progressively transform source data into searchable knowledge.
