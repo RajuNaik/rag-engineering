@@ -8,6 +8,74 @@ The goal is not to hide the important concepts behind a framework on day one. We
 
 ---
 
+## 🎬 Start Here — What Is RAG?
+
+**RAG = Retrieval-Augmented Generation.**
+
+The simple idea is:
+
+> **Don't ask the LLM to remember everything. Find the right information first, then ask the LLM to reason over it.**
+
+A traditional LLM may know broad information from its training, but an enterprise application often needs access to private, changing or domain-specific knowledge. RAG adds a retrieval step that finds relevant external information and provides it to the LLM as context.
+
+```text
+User Question
+      ↓
+   Retrieval 🔎
+      ↓
+Relevant Context 📚
+      ↓
+  Augmentation 🧩
+      ↓
+      LLM 🤖
+      ↓
+ Grounded Answer 💬
+```
+
+### 💡 Why RAG?
+
+RAG helps address practical problems such as:
+
+- 📚 Knowledge that lives outside the model
+- 🔄 Frequently changing documents and information
+- 🏢 Private/domain-specific enterprise knowledge
+- 🧠 Sending an entire knowledge base to an LLM for every question
+- 🔍 Need for source attribution and provenance
+
+It does **not** magically guarantee correctness. Retrieval quality, source quality, chunking, prompting and evaluation still matter.
+
+### 🏢 Real-world example
+
+Imagine an enterprise HR assistant with thousands of policies and benefits documents.
+
+An employee asks:
+
+> **"How many days of parental leave am I eligible for in India?"**
+
+Instead of expecting the LLM to memorize the company's HR library, the RAG system can retrieve the relevant India parental-leave sections, provide them to the LLM, and return an answer with source information.
+
+```text
+HR Documents
+     ↓
+Ingest → Parse → Chunk → Embed → Knowledge Store
+                                      ↑
+Employee Question → Retrieve → Context → LLM → Answer + Sources
+```
+
+### 📘 Want the short fundamentals guide?
+
+See **[`docs/RAG_FUNDAMENTALS.md`](docs/RAG_FUNDAMENTALS.md)** for:
+
+- What RAG is
+- Why RAG is needed
+- Problems RAG helps address
+- RAG vs. retraining/fine-tuning
+- Offline vs. online RAG
+- A real enterprise example
+- The easiest-to-hardest ingestion learning plan
+
+---
+
 ## 🎯 What We Are Building
 
 A complete RAG application with two clearly separated paths:
@@ -60,9 +128,9 @@ We will build in this order:
 - [ ] **14 — Production Engineering**: observability, security, configuration, testing, deployment and cost/performance engineering.
 - [ ] **15 — Framework Layer**: only after understanding the pieces, introduce frameworks such as LangChain where they genuinely add value.
 
-### 🧭 Source-learning plan
+### 🧭 Source-learning plan — easiest → hardest
 
-For ingestion we intentionally learn sources individually:
+For ingestion we intentionally learn sources individually and progressively increase complexity:
 
 1. 📄 TXT / Markdown
 2. 📕 PDF
@@ -72,11 +140,13 @@ For ingestion we intentionally learn sources individually:
 6. 🔗 REST / JSON APIs
 7. 🗄️ SQL databases
 8. ☁️ Azure Blob / ADLS Gen2
-9. 📁 Additional enterprise/document sources later
+9. 🏢 Additional enterprise/document sources later
 
 For every source we will answer the same questions:
 
 > **How do I connect? → How do I load? → What does the raw response look like? → How do I normalize it? → What metadata must I preserve? → What can go wrong?**
+
+We will **learn and test each source independently first**. Only after the individual sources are understood will we consolidate the common patterns into a reusable ingestion framework.
 
 ---
 
@@ -92,6 +162,9 @@ rag-engineering/
 ├── .env.example                 ← Configuration template
 ├── .gitignore
 ├── config.yaml                  ← Non-secret configuration
+│
+├── docs/
+│   └── RAG_FUNDAMENTALS.md      ← 🎬 RAG concepts + motivation
 │
 ├── src/
 │   ├── ingestion/               ← 🔵 Source connectors/loaders
@@ -444,6 +517,7 @@ The README is therefore treated as a **living engineering handbook** and will be
 |---|---|
 | Repository setup | ✅ Complete |
 | Target architecture | ✅ Defined |
+| RAG fundamentals notes | ✅ Added |
 | Ingestion contract | ✅ Defined |
 | TXT / Markdown | ✅ Implemented |
 | PDF | 🟢 Loader implemented — learning/test next |
