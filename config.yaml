@@ -1,0 +1,12 @@
+project:
+  name: rag-engineering
+  stage: ingestion
+
+ingestion:
+  request_timeout_seconds: 30
+  default_encoding: utf-8
+
+azure:
+  storage_account: aiengrag
+  file_system: rag-raw
+  directory: files
