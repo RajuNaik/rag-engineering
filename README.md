@@ -152,22 +152,30 @@ The ingestion layer should **preserve useful source metadata** instead of throwi
 
 ---
 
-# 📁 What We Will Implement First
+# 📁 Ingestion Components Implemented
 
-The first ingestion milestone covers:
+The first ingestion foundation now contains loaders for:
 
-| Source | Initial implementation | Purpose |
+| Source | File | Initial approach |
 |---|---|---|
-| TXT / MD | Local text loader | Simplest source; establish the contract |
-| PDF | `pypdf` based loader | Document ingestion |
-| CSV | `pandas` based loader | Structured file ingestion |
-| Excel | `pandas` + `openpyxl` | Workbook/sheet ingestion |
-| Web | `requests` + BeautifulSoup | HTML ingestion |
-| REST API | `requests` | JSON/API ingestion |
-| SQL | SQLAlchemy | Database ingestion |
-| ADLS Gen2 | Azure SDK | Cloud object/file ingestion |
+| TXT / Markdown | `src/ingestion/local_file.py` | Local text → `Document` |
+| PDF | `src/ingestion/pdf.py` | One `Document` per PDF page |
+| CSV | `src/ingestion/csv.py` | One `Document` per row |
+| Excel | `src/ingestion/excel.py` | One `Document` per worksheet row |
+| Web | `src/ingestion/web.py` | Fetch raw HTML + provenance |
+| REST API | `src/ingestion/api.py` | Fetch JSON + provenance |
+| SQL | `src/ingestion/sql.py` | Query rows → `Document` objects |
+| ADLS Gen2 | `src/ingestion/adls.py` | List/download text with Entra ID |
 
-We will test each source independently before moving to parsing.
+These are intentionally **learning implementations**, not the final framework. We will test each source, understand its edge cases, then refactor common patterns into reusable abstractions.
+
+### Common contract
+
+`src/ingestion/models.py` defines the shared `Document` object. The loader should preserve provenance such as file name, page number, row number, URL, SQL source, ADLS path and other source-specific metadata.
+
+### Current ingestion guide
+
+See [`src/ingestion/README.md`](src/ingestion/README.md) for the source-by-source learning sequence and first exercises.
 
 ---
 
@@ -177,7 +185,7 @@ The project can use the existing Azure storage account used during the Local LLM
 
 **Storage account:** `aiengrag`
 
-For learning, the ADLS Gen2 source loader will support Microsoft Entra ID authentication rather than putting storage keys into source code.
+For learning, the ADLS Gen2 source loader supports Microsoft Entra ID authentication rather than putting storage keys into source code.
 
 A typical local setup uses:
 
@@ -240,15 +248,81 @@ Then update only the values required for the source you are testing.
 
 # ▶️ Running the Current Ingestion Examples
 
-The first examples will be simple Python scripts so that the ingestion concepts remain visible.
+Run from the repository root.
 
-Example pattern:
+### TXT / Markdown
 
 ```powershell
-python -m src.ingestion.local_file_loader
+python -m src.ingestion.local_file examples/data/sample.txt
 ```
 
-As new source loaders are added, the README will contain the exact command and expected output for each one.
+### PDF
+
+```python
+from src.ingestion.pdf import load_pdf
+
+documents = load_pdf("path/to/file.pdf")
+print(len(documents))
+print(documents[0].metadata)
+```
+
+### CSV
+
+```python
+from src.ingestion.csv import load_csv
+
+documents = load_csv("path/to/file.csv")
+```
+
+### Excel
+
+```python
+from src.ingestion.excel import load_excel
+
+documents = load_excel("path/to/file.xlsx", sheet_name=0)
+```
+
+### Web
+
+```python
+from src.ingestion.web import load_web_page
+
+document = load_web_page("https://example.com")
+```
+
+### REST API
+
+```python
+from src.ingestion.api import load_json_api
+
+document = load_json_api("https://example.com/api/data")
+```
+
+### SQL
+
+```python
+from src.ingestion.sql import create_sql_engine, load_sql_query
+
+engine = create_sql_engine("YOUR_SQLALCHEMY_DATABASE_URL")
+documents = load_sql_query(engine, "SELECT * FROM your_table")
+```
+
+### ADLS Gen2
+
+```python
+from src.ingestion.adls import create_adls_service_client, load_text_file
+
+client = create_adls_service_client("aiengrag")
+document = load_text_file(client, "rag-raw", "files/sample.txt")
+```
+
+For external systems, do not place credentials directly in source code. Use Entra ID, environment variables, managed identity or a proper secret-management mechanism as appropriate.
+
+### Run tests
+
+```powershell
+pytest -q
+```
 
 ---
 
@@ -371,15 +445,15 @@ The README is therefore treated as a **living engineering handbook** and will be
 | Repository setup | ✅ Complete |
 | Target architecture | ✅ Defined |
 | Ingestion contract | ✅ Defined |
-| TXT / Markdown | 🔄 Current learning stage |
-| PDF | ⏳ |
-| CSV | ⏳ |
-| Excel | ⏳ |
-| Web | ⏳ |
-| REST API | ⏳ |
-| SQL database | ⏳ |
-| ADLS Gen2 | ⏳ |
-| Parsing | ⏳ |
+| TXT / Markdown | ✅ Implemented |
+| PDF | 🟢 Loader implemented — learning/test next |
+| CSV | 🟢 Loader implemented — learning/test next |
+| Excel | 🟢 Loader implemented — learning/test next |
+| Web | 🟢 Loader implemented — learning/test next |
+| REST API | 🟢 Loader implemented — learning/test next |
+| SQL database | 🟢 Loader implemented — learning/test next |
+| ADLS Gen2 | 🟢 Loader implemented — learning/test next |
+| Parsing | ⏳ Next major stage after ingestion |
 | Chunking | ⏳ |
 | Embeddings | ⏳ |
 | Vector/Search store | ⏳ |
