@@ -9,7 +9,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .adls import create_adls_service_client, upload_bytes, upload_text
+from .adls import create_adls_service_client, path_exists, read_text, upload_bytes, upload_text
 from .models import Document
 
 load_dotenv()
@@ -24,6 +24,19 @@ def _document_id(source: str) -> str:
     return hashlib.sha256(source.encode("utf-8")).hexdigest()[:32]
 
 
+def _existing_content_hash(client, file_system: str, processed_path: str) -> str | None:
+    """Read the previously persisted content hash, if a processed document exists."""
+    if not path_exists(client, file_system, processed_path):
+        return None
+
+    try:
+        processed_json = json.loads(read_text(client, file_system, processed_path))
+        return processed_json.get("metadata", {}).get("content_hash")
+    except (json.JSONDecodeError, UnicodeDecodeError, KeyError, TypeError):
+        # A malformed processed artifact should not be treated as an unchanged source.
+        return None
+
+
 def load_text_file(
     path: str | Path,
     encoding: str = "utf-8",
@@ -36,8 +49,8 @@ def load_text_file(
     """Ingest a local TXT/Markdown file into the common Document contract.
 
     With ``persist_to_adls=True`` this follows the production-style learning
-    flow: validate → persist raw bytes → extract/normalize → create Document
-    → persist processed JSON.
+    flow: validate → hash → change detection → persist raw bytes →
+    extract/normalize → create Document → persist processed JSON.
     """
     file_path = Path(path)
     if not file_path.exists():
@@ -85,10 +98,18 @@ def load_text_file(
             }
         )
 
+        # Change detection: compare the current content fingerprint with the
+        # fingerprint stored in the previous processed Document.
+        existing_hash = _existing_content_hash(client, file_system, processed_path)
+        if existing_hash == content_hash:
+            document.metadata["ingestion_status"] = "skipped_unchanged"
+            return document
+
         # Raw zone: preserve the exact source bytes for reproducibility/reprocessing.
         upload_bytes(client, file_system, raw_path, raw_bytes)
 
         # Processed zone: persist the normalized common Document representation.
+        document.metadata["ingestion_status"] = "processed"
         processed_json = json.dumps(asdict(document), indent=2, ensure_ascii=False)
         upload_text(client, file_system, processed_path, processed_json)
 
@@ -139,6 +160,7 @@ def main() -> None:
     print(f"Characters: {len(document.content)}")
     print(f"Content SHA-256: {document.metadata['content_hash']}")
     if args.persist_to_adls:
+        print(f"Ingestion status: {document.metadata['ingestion_status']}")
         print(f"Raw ADLS path: {document.metadata['raw_path']}")
         print(f"Processed ADLS path: {document.metadata['processed_path']}")
     print(document.content[:500])
