@@ -9,4 +9,5 @@ ingestion:
 azure:
   storage_account: aiengrag
   file_system: rag-raw
-  directory: files
+  raw_root: raw
+  processed_root: processed
