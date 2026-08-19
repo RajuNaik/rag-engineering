@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from azure.core.exceptions import ResourceExistsError
+from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 from azure.identity import DefaultAzureCredential
 from azure.storage.filedatalake import DataLakeServiceClient
 
@@ -24,7 +24,6 @@ def _ensure_directory(service_client: DataLakeServiceClient, file_system: str, d
     try:
         directory_client.create_directory()
     except ResourceExistsError:
-        # Idempotent ingestion: an existing directory is expected.
         pass
 
 
@@ -53,6 +52,33 @@ def upload_text(
     upload_bytes(service_client, file_system, path, content.encode(encoding))
 
 
+def path_exists(
+    service_client: DataLakeServiceClient,
+    file_system: str,
+    path: str,
+) -> bool:
+    """Return True when an ADLS file exists."""
+    file_system_client = service_client.get_file_system_client(file_system)
+    try:
+        file_system_client.get_file_client(path).get_file_properties()
+        return True
+    except ResourceNotFoundError:
+        return False
+
+
+def read_text(
+    service_client: DataLakeServiceClient,
+    file_system: str,
+    path: str,
+    encoding: str = "utf-8",
+) -> str:
+    """Download a text file from ADLS Gen2."""
+    file_system_client = service_client.get_file_system_client(file_system)
+    file_client = file_system_client.get_file_client(path)
+    data = file_client.download_file().readall()
+    return data.decode(encoding)
+
+
 def list_paths(
     service_client: DataLakeServiceClient,
     file_system: str,
@@ -60,10 +86,7 @@ def list_paths(
 ) -> list[str]:
     """List paths under an ADLS Gen2 file system/directory."""
     file_system_client = service_client.get_file_system_client(file_system)
-    return [
-        item.name
-        for item in file_system_client.get_paths(path=directory, recursive=True)
-    ]
+    return [item.name for item in file_system_client.get_paths(path=directory, recursive=True)]
 
 
 def load_text_file(
@@ -72,8 +95,5 @@ def load_text_file(
     path: str,
     encoding: str = "utf-8",
 ):
-    """Download a text-like ADLS file and return its content as a string."""
-    file_system_client = service_client.get_file_system_client(file_system)
-    file_client = file_system_client.get_file_client(path)
-    data = file_client.download_file().readall()
-    return data.decode(encoding)
+    """Backward-compatible alias for downloading an ADLS text file."""
+    return read_text(service_client, file_system, path, encoding)
