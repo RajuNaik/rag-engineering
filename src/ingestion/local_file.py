@@ -76,13 +76,6 @@ def load_text_file(
         raw_path = f"{raw_root}/txt/{file_path.name}"
         processed_path = f"{processed_root}/txt/{document.id}.json"
 
-        # Raw zone: preserve the exact source bytes for reproducibility/reprocessing.
-        upload_bytes(client, file_system, raw_path, raw_bytes)
-
-        # Processed zone: persist the normalized common Document representation.
-        processed_json = json.dumps(asdict(document), indent=2, ensure_ascii=False)
-        upload_text(client, file_system, processed_path, processed_json)
-
         document.metadata.update(
             {
                 "raw_path": raw_path,
@@ -91,6 +84,13 @@ def load_text_file(
                 "file_system": file_system,
             }
         )
+
+        # Raw zone: preserve the exact source bytes for reproducibility/reprocessing.
+        upload_bytes(client, file_system, raw_path, raw_bytes)
+
+        # Processed zone: persist the normalized common Document representation.
+        processed_json = json.dumps(asdict(document), indent=2, ensure_ascii=False)
+        upload_text(client, file_system, processed_path, processed_json)
 
     return document
 
