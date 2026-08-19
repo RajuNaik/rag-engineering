@@ -1,9 +1,8 @@
 from __future__ import annotations
 
+from azure.core.exceptions import ResourceExistsError
 from azure.identity import DefaultAzureCredential
 from azure.storage.filedatalake import DataLakeServiceClient
-
-from .models import Document
 
 
 def create_adls_service_client(account_name: str) -> DataLakeServiceClient:
@@ -14,6 +13,44 @@ def create_adls_service_client(account_name: str) -> DataLakeServiceClient:
     credential = DefaultAzureCredential()
     account_url = f"https://{account_name}.dfs.core.windows.net"
     return DataLakeServiceClient(account_url=account_url, credential=credential)
+
+
+def _ensure_directory(service_client: DataLakeServiceClient, file_system: str, directory: str) -> None:
+    """Create an ADLS directory tree if it does not already exist."""
+    if not directory:
+        return
+
+    directory_client = service_client.get_file_system_client(file_system).get_directory_client(directory)
+    try:
+        directory_client.create_directory()
+    except ResourceExistsError:
+        # Idempotent ingestion: an existing directory is expected.
+        pass
+
+
+def upload_bytes(
+    service_client: DataLakeServiceClient,
+    file_system: str,
+    path: str,
+    data: bytes,
+) -> None:
+    """Upload bytes to ADLS Gen2, creating parent directories as needed."""
+    parent = "/".join(path.split("/")[:-1])
+    _ensure_directory(service_client, file_system, parent)
+
+    file_client = service_client.get_file_system_client(file_system).get_file_client(path)
+    file_client.upload_data(data, overwrite=True)
+
+
+def upload_text(
+    service_client: DataLakeServiceClient,
+    file_system: str,
+    path: str,
+    content: str,
+    encoding: str = "utf-8",
+) -> None:
+    """Upload text content to ADLS Gen2."""
+    upload_bytes(service_client, file_system, path, content.encode(encoding))
 
 
 def list_paths(
@@ -34,25 +71,9 @@ def load_text_file(
     file_system: str,
     path: str,
     encoding: str = "utf-8",
-) -> Document:
-    """Download a text-like ADLS file and return it as a Document.
-
-    Binary formats such as PDF/Excel should be downloaded first and handed to
-    the appropriate parser/loader in the next learning stage.
-    """
+):
+    """Download a text-like ADLS file and return its content as a string."""
     file_system_client = service_client.get_file_system_client(file_system)
     file_client = file_system_client.get_file_client(path)
     data = file_client.download_file().readall()
-    content = data.decode(encoding)
-
-    return Document(
-        content=content,
-        metadata={
-            "source_type": "adls_gen2",
-            "source": path,
-            "file_system": file_system,
-            "path": path,
-            "size_bytes": len(data),
-        },
-        id=f"adls://{file_system}/{path}",
-    )
+    return data.decode(encoding)
