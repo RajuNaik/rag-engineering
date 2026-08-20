@@ -1,0 +1,23 @@
+{
+  "employee": {
+    "id": 101,
+    "name": "Raju",
+    "department": "Engineering",
+    "location": "Hyderabad"
+  },
+  "skills": [
+    "Python",
+    "Databricks",
+    "SQL"
+  ],
+  "projects": [
+    {
+      "name": "RAG Engineering",
+      "status": "In Progress"
+    },
+    {
+      "name": "Enterprise Data Platform",
+      "status": "Completed"
+    }
+  ]
+}
