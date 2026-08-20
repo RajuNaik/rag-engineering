@@ -1,0 +1,30 @@
+{
+  "C:\\Users\\Raju Naik\\local-projects\\rag-engineering\\examples\\data\\employees.csv": {
+    "source_id": "C:\\Users\\Raju Naik\\local-projects\\rag-engineering\\examples\\data\\employees.csv",
+    "file_hash": "5684384a6e59ce0e897774cdf5ba16f5eb78666a9f0ebd4b08fb80dba59f5a81",
+    "status": "success",
+    "processed_at": "2026-08-20T08:35:30.730733+00:00",
+    "rows": {
+      "101": {
+        "row_hash": "8bb620fe5a4dd57c0ad5a0489ff8c4a4bd5b084eba991db46a54b854c4d5c189",
+        "row_number": 2,
+        "status": "success"
+      },
+      "102": {
+        "row_hash": "be6008276315ddefa9e6c0848e74cb955bd2e58f072983136ca57f5b27b2601e",
+        "row_number": 3,
+        "status": "success"
+      },
+      "103": {
+        "row_hash": "54a97d8c3bad05166b0d2e12859fdd22170eb3ccaa28fccac40f4e7421d2fc89",
+        "row_number": 4,
+        "status": "success"
+      },
+      "104": {
+        "row_hash": "925b3a88b0fbaef4aec3a48de528d9f1f1164a46e79118f2f20b3c73c253f602",
+        "status": "deleted",
+        "row_number": 5
+      }
+    }
+  }
+}
