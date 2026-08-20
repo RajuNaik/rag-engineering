@@ -1,23 +1,32 @@
 {
-  "employee": {
-    "id": 101,
-    "name": "Raju",
-    "department": "Engineering",
-    "location": "Hyderabad"
-  },
-  "skills": [
-    "Python",
-    "Databricks",
-    "SQL"
-  ],
-  "projects": [
+  "employees": [
     {
-      "name": "RAG Engineering",
-      "status": "In Progress"
+      "employee_id": 101,
+      "name": "Raju",
+      "department": "Engineering",
+      "location": "Hyderabad",
+      "skills": ["Python", "Databricks", "SQL"]
     },
     {
-      "name": "Enterprise Data Platform",
-      "status": "Completed"
+      "employee_id": 102,
+      "name": "John",
+      "department": "Finance",
+      "location": "New York",
+      "skills": ["Excel", "SQL", "Power BI"]
+    },
+    {
+      "employee_id": 103,
+      "name": "Sarah",
+      "department": "HR",
+      "location": "London",
+      "skills": ["Recruiting", "People Analytics"]
+    },
+    {
+      "employee_id": 104,
+      "name": "Anil",
+      "department": "Engineering",
+      "location": "Bangalore",
+      "skills": ["Python", "Spark", "Azure"]
     }
   ]
 }
