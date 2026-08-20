@@ -1,0 +1,15 @@
+{
+  "C:\\Users\\Raju Naik\\local-projects\\rag-engineering\\examples\\data\\employee_profile.json": {
+    "source_id": "C:\\Users\\Raju Naik\\local-projects\\rag-engineering\\examples\\data\\employee_profile.json",
+    "file_hash": "b284f000e14df04fae8a54fd5a26e3f344f071d75e745079e63f0336d6442b81",
+    "status": "success",
+    "processed_at": "2026-08-20T18:05:58.781799+00:00",
+    "rows": {
+      "document": {
+        "row_hash": "b284f000e14df04fae8a54fd5a26e3f344f071d75e745079e63f0336d6442b81",
+        "status": "success",
+        "document_id": "d13b3cc362944694239ee0357007c2f7"
+      }
+    }
+  }
+}
