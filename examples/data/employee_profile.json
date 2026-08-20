@@ -10,7 +10,7 @@
     {
       "employee_id": 102,
       "name": "John",
-      "department": "Finance",
+      "department": "Data Engineering",
       "location": "New York",
       "skills": ["Excel", "SQL", "Power BI"]
     },
