@@ -1,1 +1,1 @@
-"""Embedding stage — implemented after chunking."""
+"""Embedding stage for converting persisted RAG chunks into vectors."""
