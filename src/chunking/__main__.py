@@ -5,7 +5,7 @@ import os
 
 from dotenv import load_dotenv
 
-from .chunker import process_adls
+from .chunker import DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, process_adls
 
 
 load_dotenv()
@@ -18,8 +18,8 @@ def main() -> None:
     parser.add_argument("--processed-root", default=os.getenv("AZURE_STORAGE_PROCESSED_ROOT", "processed"))
     parser.add_argument("--chunks-root", default=os.getenv("AZURE_STORAGE_CHUNKS_ROOT", "chunks"))
     parser.add_argument("--state-path", default="metadata/chunking_state.json")
-    parser.add_argument("--chunk-size", type=int, default=500)
-    parser.add_argument("--chunk-overlap", type=int, default=50)
+    parser.add_argument("--chunk-size", type=int, default=DEFAULT_CHUNK_SIZE)
+    parser.add_argument("--chunk-overlap", type=int, default=DEFAULT_CHUNK_OVERLAP)
     args = parser.parse_args()
 
     if not args.storage_account or not args.file_system:
