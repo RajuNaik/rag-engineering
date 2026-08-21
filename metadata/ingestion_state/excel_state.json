@@ -1,0 +1,52 @@
+{
+  "C:\\Users\\Raju Naik\\local-projects\\rag-engineering\\examples\\data\\employees.xlsx": {
+    "source_id": "C:\\Users\\Raju Naik\\local-projects\\rag-engineering\\examples\\data\\employees.xlsx",
+    "file_hash": "87c7cf21c8069f3edb8e53b1e038b27a2568412ca1da199fca7074463e7a1ba0",
+    "status": "success",
+    "processed_at": "2026-08-20T18:46:31.645120+00:00",
+    "rows": {
+      "Employees::473fc9e5f2df32506a8326c056fc2e35cd5e714889f30efba8ac6001082ce51e": {
+        "sheet_name": "Employees",
+        "row_id": "473fc9e5f2df32506a8326c056fc2e35cd5e714889f30efba8ac6001082ce51e",
+        "row_hash": "473fc9e5f2df32506a8326c056fc2e35cd5e714889f30efba8ac6001082ce51e",
+        "row_number": 2,
+        "status": "success"
+      },
+      "Employees::be6008276315ddefa9e6c0848e74cb955bd2e58f072983136ca57f5b27b2601e": {
+        "sheet_name": "Employees",
+        "row_id": "be6008276315ddefa9e6c0848e74cb955bd2e58f072983136ca57f5b27b2601e",
+        "row_hash": "be6008276315ddefa9e6c0848e74cb955bd2e58f072983136ca57f5b27b2601e",
+        "row_number": 3,
+        "status": "success"
+      },
+      "Employees::54a97d8c3bad05166b0d2e12859fdd22170eb3ccaa28fccac40f4e7421d2fc89": {
+        "sheet_name": "Employees",
+        "row_id": "54a97d8c3bad05166b0d2e12859fdd22170eb3ccaa28fccac40f4e7421d2fc89",
+        "row_hash": "54a97d8c3bad05166b0d2e12859fdd22170eb3ccaa28fccac40f4e7421d2fc89",
+        "row_number": 4,
+        "status": "success"
+      },
+      "Employees::925b3a88b0fbaef4aec3a48de528d9f1f1164a46e79118f2f20b3c73c253f602": {
+        "sheet_name": "Employees",
+        "row_id": "925b3a88b0fbaef4aec3a48de528d9f1f1164a46e79118f2f20b3c73c253f602",
+        "row_hash": "925b3a88b0fbaef4aec3a48de528d9f1f1164a46e79118f2f20b3c73c253f602",
+        "row_number": 5,
+        "status": "success"
+      },
+      "Projects::5ddc38ac0c5556217f3497af9b18e02afa4c86a1a49d224ffea636189ce6cf89": {
+        "sheet_name": "Projects",
+        "row_id": "5ddc38ac0c5556217f3497af9b18e02afa4c86a1a49d224ffea636189ce6cf89",
+        "row_hash": "5ddc38ac0c5556217f3497af9b18e02afa4c86a1a49d224ffea636189ce6cf89",
+        "row_number": 2,
+        "status": "success"
+      },
+      "Projects::9e549a433cff7cef0b2082c7226bb51d21f61b4c1b680245132b67d21acd0d29": {
+        "sheet_name": "Projects",
+        "row_id": "9e549a433cff7cef0b2082c7226bb51d21f61b4c1b680245132b67d21acd0d29",
+        "row_hash": "9e549a433cff7cef0b2082c7226bb51d21f61b4c1b680245132b67d21acd0d29",
+        "row_number": 3,
+        "status": "success"
+      }
+    }
+  }
+}
