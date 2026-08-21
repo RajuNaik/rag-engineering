@@ -35,6 +35,7 @@ def load_model(model_name: str = DEFAULT_MODEL_NAME) -> SentenceTransformer:
 def embed_chunk_file(
     chunk_document: dict[str, Any],
     model: SentenceTransformer,
+    model_name: str,
     batch_size: int = DEFAULT_BATCH_SIZE,
 ) -> dict[str, Any]:
     """Embed every chunk in one chunk artifact and preserve lineage."""
@@ -43,6 +44,8 @@ def embed_chunk_file(
         return {
             "document_id": chunk_document.get("document_id"),
             "source_chunk_document": chunk_document.get("source_document"),
+            "embedding_model": model_name,
+            "embedding_dimension": model.get_sentence_embedding_dimension(),
             "embedding_count": 0,
             "embeddings": [],
         }
@@ -72,8 +75,7 @@ def embed_chunk_file(
     return {
         "document_id": chunk_document["document_id"],
         "source_chunk_document": chunk_document.get("source_document"),
-        "embedding_model": model.get_sentence_embedding_dimension() and model.__class__.__name__ or None,
-        "embedding_model_name": getattr(model, "model_card_data", None) and getattr(model.model_card_data, "model_name", None) or DEFAULT_MODEL_NAME,
+        "embedding_model": model_name,
         "embedding_dimension": dimension,
         "embedding_count": len(embedded_chunks),
         "embeddings": [asdict(item) for item in embedded_chunks],
@@ -102,7 +104,7 @@ def process_adls(
 
     for path in paths:
         chunk_document = json.loads(read_text(client, file_system, path))
-        payload = embed_chunk_file(chunk_document, model, batch_size)
+        payload = embed_chunk_file(chunk_document, model, model_name, batch_size)
 
         source_type = "unknown"
         chunks = chunk_document.get("chunks", [])
