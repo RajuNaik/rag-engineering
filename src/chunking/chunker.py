@@ -11,6 +11,12 @@ from typing import Any
 from ..ingestion.adls import create_adls_service_client, list_paths, read_text, upload_text
 
 
+# Learning defaults: intentionally small so chunk boundaries are easy to inspect.
+# Production values will be supplied by configuration rather than hard-coded here.
+DEFAULT_CHUNK_SIZE = 10
+DEFAULT_CHUNK_OVERLAP = 2
+
+
 @dataclass(slots=True)
 class Chunk:
     """A retrieval unit produced from one normalized Document."""
@@ -38,7 +44,11 @@ def _document_fingerprint(document: dict[str, Any]) -> str:
     )
 
 
-def chunk_text(content: str, chunk_size: int = 500, chunk_overlap: int = 50) -> list[str]:
+def chunk_text(
+    content: str,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
+) -> list[str]:
     """Create deterministic word-based chunks while preserving overlap."""
     if chunk_size <= 0:
         raise ValueError("chunk_size must be greater than zero")
@@ -65,8 +75,8 @@ def chunk_text(content: str, chunk_size: int = 500, chunk_overlap: int = 50) -> 
 
 def chunk_document(
     document: dict[str, Any],
-    chunk_size: int = 500,
-    chunk_overlap: int = 50,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
 ) -> list[Chunk]:
     """Convert one normalized Document JSON object into Chunk objects."""
     document_id = document["id"]
@@ -119,7 +129,14 @@ class ChunkingState:
     def get(self, document_id: str) -> dict[str, Any] | None:
         return self.data.get(document_id)
 
-    def put(self, document_id: str, fingerprint: str, chunks: list[Chunk], chunk_size: int, chunk_overlap: int) -> None:
+    def put(
+        self,
+        document_id: str,
+        fingerprint: str,
+        chunks: list[Chunk],
+        chunk_size: int,
+        chunk_overlap: int,
+    ) -> None:
         self.data[document_id] = {
             "document_id": document_id,
             "content_fingerprint": fingerprint,
@@ -163,8 +180,8 @@ def process_adls(
     processed_root: str = "processed",
     chunks_root: str = "chunks",
     state_path: str = "metadata/chunking_state.json",
-    chunk_size: int = 500,
-    chunk_overlap: int = 50,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
 ) -> dict[str, int]:
     """Read normalized Documents from ADLS and persist chunk artifacts."""
     client = create_adls_service_client(storage_account)
