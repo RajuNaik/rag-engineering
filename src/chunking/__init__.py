@@ -1,1 +1,1 @@
-"""Chunking stage — implemented after parsing."""
+"""Common chunking stage for normalized RAG Documents."""
