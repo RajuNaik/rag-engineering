@@ -24,8 +24,9 @@ def main() -> None:
     print(result["metadatas"])
 
     print("\nEmbedding dimensions:")
-    if result["embeddings"]:
-        print(len(result["embeddings"][0]))
+    embeddings = result["embeddings"]
+    if len(embeddings) > 0:
+        print(len(embeddings[0]))
     else:
         print(0)
 
